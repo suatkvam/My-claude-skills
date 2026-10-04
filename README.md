@@ -9,6 +9,9 @@ by documents: a living PRD and an append-only decision log.
 | `/dev-workflow:project-map` | skill | Reads the code and writes a map of the project: architecture, component catalogue, end-to-end flows, and what is real versus mock. |
 | `dev-workflow:reviewer` | subagent | Reviews changed PRD sections against the decision log. `decision` runs it; you can also ask for it by name. |
 
+The reviewer runs on the model of your session. For the best results, use a strong model
+such as Opus.
+
 Both skills run only when you type them. Claude does not start them on its own.
 
 ## Install

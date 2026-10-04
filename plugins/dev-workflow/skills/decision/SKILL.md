@@ -75,6 +75,11 @@ The PRD states what is true now; this log states why.
 0. Work in the main working tree on the default branch. If the current directory is a linked
    git worktree or another branch is checked out, stop and tell the user, unless the change
    text says to work there.
+   Then keep the text from before the change, so that the reviewer can compare. Run
+   `git status --porcelain -- <prd> <decisions>`. If the project does not use git, or if the
+   command prints anything (the PRD or the decision log has uncommitted changes), copy both
+   files as they are now to a temporary directory outside the project. A file that does not
+   exist yet has no earlier text; remember that instead.
 1. Read the whole decision log and the PRD sections that the change affects.
 2. Record the change in the decision log as the next number, or as a clarification of an
    existing decision if that fits better.
@@ -86,8 +91,12 @@ The PRD states what is true now; this log states why.
    modules. Leave implementation details to the tasks that implement them.
 4. Review: use the Agent tool to run the `dev-workflow:reviewer` subagent. Give it the PRD
    path, the decision log path, the identifier of the new or changed decision and the list of
-   PRD sections you changed. Never review the change yourself. Fix the findings that are
-   correct; do not act on the ones you reject, and say why in the report.
+   PRD sections you changed. Also give it what the change replaced: if you made copies in
+   step 0, the paths of the copies as the text before the change, and say if a file is new;
+   otherwise the output of `git diff -- <prd> <decisions>`. The reviewer cannot run commands,
+   so it sees the earlier text only if you give it. Never review the change yourself. Fix the
+   findings that are correct; do not act on the ones you reject, and say why in the report.
+   Delete the copies when the review is done.
 5. Update the PRD header with today's date and the latest decision identifier. If the PRD has
    no such header line, add `Last updated: <date> — latest decision: D-xx` under the title.
 6. Before you finish, read the decision log again and check that the text of the new entry is
