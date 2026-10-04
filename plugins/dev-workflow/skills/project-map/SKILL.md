@@ -25,6 +25,24 @@ Do not modify any other file. Do not commit.
 - If the project defines its own test/check command, run it and use the result. Do not run anything
   that needs network access, external services or secrets; note it instead.
 
+### Use a code graph if one is available
+- Check first, before you scan the tree: does this session have an MCP tool or a skill that serves
+  a code graph (graphify, GitNexus or anything similar), or does the repository contain graph
+  output (e.g. graphify-out/, a GitNexus index directory)? These names are examples. Recognise any
+  tool or directory that holds modules, symbols and the edges between them.
+- Check freshness: compare the time the graph was generated with the time of the last commit
+  (`git log -1 --format=%cI`). If the graph is older and a local CLI can regenerate it without
+  network access, regenerate it. If it cannot be regenerated, use the graph only as a hint and
+  confirm in the code everything you take from it.
+- Use the graph for: the inventory of modules and components, the dependencies between modules,
+  the call chains in the flows, and code that nothing calls (DEAD). This replaces walking the
+  files one by one.
+- A graph shows structure, not bodies. Give the REAL/PARTIAL/SKELETON/MOCK labels and the file:line
+  evidence from reading the function bodies. Read only the files the graph points to.
+- If there is no graph, continue with the directory scan described above.
+- Name the source in the "Generated" line at the top of the map, e.g. "graph: graphify <time>".
+  If the graph was stale and used only as a hint, say so there.
+
 ## Accuracy rules
 - Counts in the Summary (REAL/PARTIAL/...) must be computed from the rows of the component catalogue,
   not estimated. Recount on every update.
