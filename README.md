@@ -16,14 +16,14 @@ Both skills run only when you type them. Claude does not start them on its own.
 In a Claude Code session:
 
 ```text
-/plugin marketplace add <owner>/claude-dev-workflow
+/plugin marketplace add suatkvam/My-claude-skills
 /plugin install dev-workflow@claude-dev-workflow
 ```
 
 Or from your shell:
 
 ```bash
-claude plugin marketplace add <owner>/claude-dev-workflow
+claude plugin marketplace add suatkvam/My-claude-skills
 claude plugin install dev-workflow@claude-dev-workflow
 ```
 
@@ -136,7 +136,7 @@ eklentisidir.
 Kurulum:
 
 ```text
-/plugin marketplace add <owner>/claude-dev-workflow
+/plugin marketplace add suatkvam/My-claude-skills
 /plugin install dev-workflow@claude-dev-workflow
 ```
 
