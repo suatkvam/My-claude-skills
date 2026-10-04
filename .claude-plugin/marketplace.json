@@ -1,0 +1,14 @@
+{
+  "name": "claude-dev-workflow",
+  "description": "Workflow skills for document-driven development with Claude Code",
+  "owner": {
+    "name": "suatkvam"
+  },
+  "plugins": [
+    {
+      "name": "dev-workflow",
+      "source": "./plugins/dev-workflow",
+      "description": "Record decisions into a living PRD with an independent review, and map what a codebase really does"
+    }
+  ]
+}
