@@ -57,13 +57,15 @@ Examples:
 
 What happens:
 
-1. Claude reads the decision log and the affected PRD sections.
-2. It adds the next `D-xx` entry, or a dated clarification on an existing entry.
-3. It updates every PRD section the decision affects and cites the identifier there.
-4. The `dev-workflow:reviewer` subagent reviews the change. Claude fixes the valid findings.
-5. Claude updates the PRD header (date and latest decision) and checks that the numbering has
+1. Before editing, the skill copies the PRD and the decision log; the reviewer compares that
+   copy with the result, so it works without git and on the first run.
+2. Claude reads the decision log and the affected PRD sections.
+3. It adds the next `D-xx` entry, or a dated clarification on an existing entry.
+4. It updates every PRD section the decision affects and cites the identifier there.
+5. The `dev-workflow:reviewer` subagent reviews the change. Claude fixes the valid findings.
+6. Claude updates the PRD header (date and latest decision) and checks that the numbering has
    no gap.
-6. You get a report: what changed, the reviewer's findings, questions that need your decision,
+7. You get a report: what changed, the reviewer's findings, questions that need your decision,
    and task-level items listed separately.
 
 The skill edits documents only. It does not write application code and does not commit. It
