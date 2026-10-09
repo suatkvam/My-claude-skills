@@ -22,7 +22,8 @@ Recognise an option only at the end, after the sources.
 - `--prd <path>`: where to write the PRD.
 - `--decisions <path>`: where to write the decision log.
 - `--lang <language>`: the language of your final report. Default: the language the user
-  writes in.
+  writes in. If the user's message is only the command and its arguments, use the language of
+  the project's documents (the PRD, or the sources), not the language of this file.
 - `--here`: work in the current branch or worktree (step 0).
 
 A source path or an option value that contains a space must be in quotes. Expand a glob
