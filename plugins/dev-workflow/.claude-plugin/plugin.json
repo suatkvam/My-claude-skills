@@ -1,10 +1,17 @@
 {
   "name": "dev-workflow",
-  "description": "Record decisions into a living PRD with an independent review, and map what a codebase really does",
-  "version": "0.2.0",
+  "description": "Start a PRD from source documents without inventing decisions, record decisions into it with an independent review, and map what a codebase really does",
+  "version": "0.3.0",
   "author": {
     "name": "suatkvam"
   },
   "license": "MIT",
-  "keywords": ["prd", "decisions", "adr", "review", "architecture"]
+  "keywords": [
+    "prd",
+    "decisions",
+    "adr",
+    "review",
+    "architecture",
+    "research"
+  ]
 }

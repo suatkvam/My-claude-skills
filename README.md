@@ -5,15 +5,17 @@ by documents: a living PRD and an append-only decision log.
 
 | Component | Type | What it does |
 | :- | :- | :- |
+| `/dev-workflow:prd` | skill | Writes the first PRD and decision log from your source documents. Only what a source states as decided becomes a decision; everything else goes to open questions. Optional web research by subagents. The reviewer checks the result. |
 | `/dev-workflow:decision` | skill | Records a decision as the next `D-xx` entry, updates every PRD section it affects, has a separate reviewer subagent check the change, and reports. |
 | `/dev-workflow:project-map` | skill | Reads the code and writes a map of the project: architecture, component catalogue, end-to-end flows, and what is real versus mock. |
-| `dev-workflow:reviewer` | subagent | Reviews changed PRD sections against the decision log. `decision` runs it; you can also ask for it by name. |
+| `dev-workflow:reviewer` | subagent | Reviews the PRD against the decision log: the sections one decision changed, or a whole new PRD and log against their sources. `decision` and `prd` run it; you can also ask for it by name. |
+| `dev-workflow:researcher` | subagent | Researches one focus area on the web and returns sourced findings. `prd --research` runs it. |
 
-The reviewer runs on the model of your session. For the best results, use a strong model
-such as Opus. If the environment variable `CLAUDE_CODE_SUBAGENT_MODEL` is set, the reviewer
-runs on that model instead.
+The subagents run on the model of your session. For the best results, use a strong model
+such as Opus. If the environment variable `CLAUDE_CODE_SUBAGENT_MODEL` is set, they run on
+that model instead.
 
-Both skills run only when you type them. Claude does not start them on its own.
+The skills run only when you type them. Claude does not start them on its own.
 
 ## Install
 
@@ -33,6 +35,62 @@ claude plugin install dev-workflow@claude-dev-workflow
 
 To try it without installing, clone the repository and run
 `claude --plugin-dir ./plugins/dev-workflow`.
+
+## `/dev-workflow:prd`
+
+```
+/dev-workflow:prd <source files or directories> [--research] [--prd <path>] [--decisions <path>] [--lang <language>] [--here]
+```
+
+Use it once, to start the documents of a project. Sources are files you already have: design
+notes, an exported chat, an `idea.md`. After this, record every change with
+`/dev-workflow:decision`.
+
+| Option | Default | Meaning |
+| :-- | :-- | :-- |
+| `--research` | off | Run three `researcher` subagents (users and market, prior art and competitors, technical feasibility) on the web |
+| `--prd <path>` | `docs/PRD.md` | Where to write the PRD |
+| `--decisions <path>` | `docs/DECISIONS.md` | Where to write the decision log |
+| `--lang <language>` | the language you write in | Language of the final report |
+| `--here` | off | Work in the current branch or worktree instead of stopping |
+
+Examples:
+
+```
+/dev-workflow:prd docs/source/design.md
+
+/dev-workflow:prd docs/idea.md --research --lang Turkish
+```
+
+What happens:
+
+1. The skill finds the targets the way `decision` finds documents (a path named in
+   `CLAUDE.md`, `AGENTS.md` or the README, the default paths, then a search). It stops if the
+   PRD already has content or the decision log has entries: it never overwrites or merges. Use
+   `decision` for changes. Sources must be inside the project; PDFs are read, other binary
+   files are not.
+2. Claude reads every source and sorts each statement: decided, superseded, proposal, open, or
+   context. **Only what a source states as decided becomes a decision.** In a chat export,
+   only your own acceptance decides; what an assistant wrote is a proposal. For each source
+   that does not say what it is, Claude asks once: approved specification or draft? When
+   unsure, a statement is a proposal.
+3. With `--research`, researcher subagents search the web, one per focus that has open
+   questions. This sends a general description of your project and its open questions to web
+   search, without names, identifiers, secrets or quotes from your documents. The researchers
+   have only web tools and cannot read your files. Their findings go into a "Research" section
+   with sources, marked unverified; their recommendations go to "Open questions".
+4. Claude writes the decision log (`D-01`, ... in the order decisions were made; superseded
+   decisions get their own entry) and the PRD, citing a decision or a source for every claim.
+   Sections the sources do not cover are left out, not padded. If the sources decide nothing,
+   the log has only its header and the PRD says `latest decision: none`.
+5. The `reviewer` subagent checks both documents against the sources: no decision without a
+   source, every decision reflected, every open item listed. Claude fixes the valid findings.
+6. You get a report: what was written, what was skipped, the review, and the open questions.
+
+The documents follow the language convention in `CLAUDE.md`, `AGENTS.md`, the README or the
+sources, otherwise the language of the sources. Like `decision`, the skill stops in a linked
+worktree or off the default branch unless you pass `--here`. It writes no code, does not
+change the sources and does not commit.
 
 ## `/dev-workflow:decision`
 
@@ -168,7 +226,8 @@ that field and adds no second line.
 
 ## Calling the reviewer by hand
 
-Ask for the `dev-workflow:reviewer` subagent by name. Without input it finds the PRD and the
+Ask for the `dev-workflow:reviewer` subagent by name. To review a whole PRD and log against
+their sources, say "new documents" and give the source paths. Without input it finds the PRD and the
 decision log in the same order as `decision`, takes the newest entry of the log and the PRD
 sections in its "Affects" field, and says at the top of its output what it assumed. Without a
 diff it cannot check for lost behavior and says so. If it finds no PRD, it does no review.
@@ -185,6 +244,13 @@ Kurulum:
 /plugin install dev-workflow@claude-dev-workflow
 ```
 
+- `/dev-workflow:prd <kaynaklar> [--research] [--prd <yol>] [--decisions <yol>] [--lang <dil>] [--here]`:
+  projenin ilk PRD'sini ve karar günlüğünü kaynak belgelerden (tasarım notları, sohbet
+  çıktısı, `idea.md`) yazar. Yalnızca bir kaynağın karar olarak belirttiği şey karar olur;
+  sohbet çıktısında yalnızca sizin onayınız karardır. Geri kalanı açık sorulara gider.
+  `--research` ile araştırmacı alt ajanlar projenin genel tarifini ve açık soruları web'de
+  arar; bulgular kaynaklı ve doğrulanmamış olarak işaretlenir. PRD zaten doluysa durur;
+  sonraki değişiklikler `decision` ile yapılır.
 - `/dev-workflow:decision <karar> [--prd <yol>] [--decisions <yol>] [--lang <dil>] [--here]`:
   kararı karar günlüğüne (varsayılan `docs/DECISIONS.md`) bir sonraki numarayla yazar, PRD'nin
   etkilenen bölümlerini günceller, değişikliği ayrı bir `reviewer` alt ajanına inceletir ve

@@ -60,6 +60,8 @@ or newest last). A directory with one file per decision is also a log: the new e
 file named and written like the others.
 
 Take the next number from the log: the highest number among the entry identifiers plus one.
+A log that has its header but no entries yet (for example one written by the `prd` skill when
+the sources decided nothing) starts at `D-01` in the format of "Starting a new log".
 Entry identifiers are the entry headings, the first column of a table, or the file names; a
 number that is only mentioned inside the text of an entry does not count. Find the highest
 identifier with Grep over the whole log, not from what you read: a read of a long file can be

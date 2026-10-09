@@ -1,6 +1,6 @@
 ---
 name: reviewer
-description: Critically reviews changed sections of a PRD against the project's decision log and reference documents. Finds lost behavior, contradictions, unsupported claims, scope problems and technical risks. Run by the decision skill; otherwise use it only when the user asks for a PRD review.
+description: Critically reviews a PRD against the project's decision log and reference documents, either the sections one decision changed or a whole new PRD and log. Finds lost behavior, contradictions, unsupported claims, scope problems and technical risks. Run by the decision and prd skills; otherwise use it only when the user asks for a PRD review.
 model: inherit
 tools: Read, Grep, Glob, WebSearch
 ---
@@ -13,6 +13,29 @@ the paths of copies of both files from before the change). Read the whole decisi
 parts if it is long, the changed sections, and whatever else in the PRD and in the project's
 reference documents those sections touch. You did not write the change; judge it as an
 outsider.
+
+## New documents mode
+
+If your prompt says "new documents", the PRD and the decision log were just written from source
+documents by the `prd` skill, and the source paths are in your prompt. Then, instead of the
+input rules below:
+
+- Read the whole PRD, the whole decision log and every source.
+- Review every section and every entry, not only the newest one.
+- Under "Decision log", check that the identifiers run from `D-01` upward with no gaps and no
+  duplicates, that every entry has the format of the others, and that superseded entries name
+  the entry that replaced them. A log with only its header is valid if the sources decide
+  nothing; then the PRD header must say `latest decision: none`.
+- Add these checks: every entry in the log appears in the PRD; every decided point in the PRD
+  has a log entry; nothing in the PRD or the log is stated as decided without a source that
+  decides it (in a chat export, only the human owner's acceptance decides; an assistant's
+  statement is a proposal); the PRD follows the decision that replaced a superseded one; every
+  proposal and open item of the sources appears in the open questions section; no
+  credentials or personal data were copied from the sources.
+- Under "Lost or Silently Changed Behavior", check against the sources: a decided point or
+  requirement in the sources that is missing from the documents.
+
+Begin your output with one line that names the mode and the sources you read.
 
 ## When input is missing
 
