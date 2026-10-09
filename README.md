@@ -7,6 +7,7 @@ by documents: a living PRD and an append-only decision log.
 | :- | :- | :- |
 | `/dev-workflow:prd` | skill | Writes the first PRD and decision log from your source documents. Only what a source states as decided becomes a decision; everything else goes to open questions. Optional web research by subagents. The reviewer checks the result. |
 | `/dev-workflow:decision` | skill | Records a decision as the next `D-xx` entry, updates every PRD section it affects, has a separate reviewer subagent check the change, and reports. |
+| `/dev-workflow:plan-tasks` | skill | Splits a build step or a set of requirements of the PRD into session-sized tasks with references, dependencies, files and testable acceptance criteria. Numbers them without collisions across branches and worktrees. |
 | `/dev-workflow:project-map` | skill | Reads the code and writes a map of the project: architecture, component catalogue, end-to-end flows, and what is real versus mock. |
 | `dev-workflow:reviewer` | subagent | Reviews the PRD against the decision log: the sections one decision changed, or a whole new PRD and log against their sources. `decision` and `prd` run it; you can also ask for it by name. |
 | `dev-workflow:researcher` | subagent | Researches one focus area on the web and returns sourced findings. `prd --research` runs it. |
@@ -140,6 +141,50 @@ stops if you are in a linked git worktree or not on the default branch; pass `--
 there. The check is skipped when the project is not a git repository, has only one local
 branch, or has no known default branch (no `origin/HEAD`).
 
+## `/dev-workflow:plan-tasks`
+
+```
+/dev-workflow:plan-tasks <build step, milestone or requirement IDs> [--prd <path>] [--decisions <path>] [--tasks <path>] [--lang <language>] [--here]
+```
+
+| Option | Default | Meaning |
+| :-- | :-- | :-- |
+| `--prd <path>` | `docs/PRD.md` | The PRD |
+| `--decisions <path>` | `docs/DECISIONS.md` | The decision log |
+| `--tasks <path>` | `docs/TASKS.md` | The task list |
+| `--lang <language>` | the language you write in | Language of the final report |
+| `--here` | off | Work in the current branch or worktree instead of stopping |
+
+Examples:
+
+```
+/dev-workflow:plan-tasks step 3
+
+/dev-workflow:plan-tasks FR-12 FR-13 --tasks planning/backlog.md
+```
+
+What happens:
+
+1. Claude reads the named part of the PRD, the requirements and decisions it references
+   (following superseded decisions to their replacement), the project rules in `CLAUDE.md` and
+   `AGENTS.md`, and the task list. It looks for tasks already planned for the same part, also
+   on other branches, and asks before it duplicates them.
+2. It splits the work into tasks one agent can finish in one session, contracts first, and
+   assigns owners by the project rules (otherwise `ai`, and `human` for work that needs your
+   judgment, such as prompts, thresholds and security policy).
+3. Every task gets PRD references, decisions, dependencies, expected files, acceptance
+   criteria a test can check, what is out of scope, and the PRD version it was planned
+   against.
+4. The next number is the highest one used on any branch or worktree plus one, so two people
+   planning in parallel do not reuse a number.
+5. It does not decide product questions: a task that depends on an open PRD question is
+   planned as blocked, and the question is in the report.
+
+If the task list already has a format or a template, the skill follows it. Only a new list gets
+the default format (`T-001`, with Status, Owner, PRD, Decisions, Depends on, Files, Acceptance,
+Out of scope). The skill writes no code, does not change the PRD or the decision log, and
+does not commit.
+
 ## `/dev-workflow:project-map`
 
 ```text
@@ -180,6 +225,7 @@ overwrites it. It modifies no other file and does not regenerate a code graph.
 docs/
   PRD.md            living product requirements; states what is true now
   DECISIONS.md      append-only decision log; states why
+  TASKS.md          task list, planned by plan-tasks
   PROJECT-MAP.md    written by project-map
 ```
 
@@ -257,6 +303,11 @@ Kurulum:
   rapor verir. Var olan günlüğün biçimini izler. Günlük yoksa sorar, sonra `D-01` ile başlatır.
   Varsayılan dalda değilseniz ya da bağlı bir worktree'deyseniz durur; `--here` ile orada
   çalışır. Seçenekler karar metninin sonunda yazılır.
+- `/dev-workflow:plan-tasks <adım, kilometre taşı veya gereksinim> [--prd <yol>] [--decisions <yol>] [--tasks <yol>] [--lang <dil>] [--here]`:
+  PRD'nin bir yapım adımını tek oturumda bitirilebilecek görevlere böler; her görevde PRD
+  referansı, kararlar, bağımlılıklar, dosyalar ve test edilebilir kabul ölçütü olur. Numarayı
+  tüm dallara ve worktree'lere bakarak verir. Açık bir ürün sorusuna bağlı görevi engelli
+  olarak planlar ve soruyu rapor eder.
 - `/dev-workflow:project-map [çıktı yolu] [dil] [--run-checks]`: kodu okur ve projenin
   haritasını `docs/PROJECT-MAP.md` dosyasına yazar: mimari, bileşen listesi, uçtan uca
   akışlar, gerçek ve sahte (mock) parçalar. Varsayılan olarak projenin testlerini ve
