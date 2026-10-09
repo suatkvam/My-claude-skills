@@ -18,7 +18,8 @@ of the decision: keep it. Remove the options at the end from the change text bef
 - `--prd <path>`: the PRD file. Default `docs/PRD.md`.
 - `--decisions <path>`: the decision log. Default `docs/DECISIONS.md`.
 - `--lang <language>`: the language of your final report. Default: the language the user
-  writes in.
+  writes in. If the user's message is only the command and its arguments, use the language of
+  the project's documents (the PRD, or the sources), not the language of this file.
 - `--here`: work in the current branch or worktree (see step 0 of the process).
 
 A value that contains a space must be in quotes: `--prd "docs/My PRD.md"`,
