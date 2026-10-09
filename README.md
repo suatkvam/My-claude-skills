@@ -225,6 +225,7 @@ overwrites it. It modifies no other file and does not regenerate a code graph.
 docs/
   PRD.md            living product requirements; states what is true now
   DECISIONS.md      append-only decision log; states why
+  TASKS.md          task list, planned by plan-tasks
   PROJECT-MAP.md    written by project-map
 ```
 
@@ -302,6 +303,11 @@ Kurulum:
   rapor verir. Var olan günlüğün biçimini izler. Günlük yoksa sorar, sonra `D-01` ile başlatır.
   Varsayılan dalda değilseniz ya da bağlı bir worktree'deyseniz durur; `--here` ile orada
   çalışır. Seçenekler karar metninin sonunda yazılır.
+- `/dev-workflow:plan-tasks <adım, kilometre taşı veya gereksinim> [--prd <yol>] [--decisions <yol>] [--tasks <yol>] [--lang <dil>] [--here]`:
+  PRD'nin bir yapım adımını tek oturumda bitirilebilecek görevlere böler; her görevde PRD
+  referansı, kararlar, bağımlılıklar, dosyalar ve test edilebilir kabul ölçütü olur. Numarayı
+  tüm dallara ve worktree'lere bakarak verir. Açık bir ürün sorusuna bağlı görevi engelli
+  olarak planlar ve soruyu rapor eder.
 - `/dev-workflow:project-map [çıktı yolu] [dil] [--run-checks]`: kodu okur ve projenin
   haritasını `docs/PROJECT-MAP.md` dosyasına yazar: mimari, bileşen listesi, uçtan uca
   akışlar, gerçek ve sahte (mock) parçalar. Varsayılan olarak projenin testlerini ve
