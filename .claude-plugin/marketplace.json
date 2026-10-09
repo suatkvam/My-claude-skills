@@ -8,7 +8,7 @@
     {
       "name": "dev-workflow",
       "source": "./plugins/dev-workflow",
-      "description": "Start a PRD from source documents without inventing decisions, record decisions into it with an independent review, and map what a codebase really does"
+      "description": "Start a PRD from source documents without inventing decisions, record decisions into it with an independent review, plan tasks from it, and map what a codebase really does"
     }
   ]
 }
