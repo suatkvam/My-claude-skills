@@ -1,7 +1,7 @@
 {
   "name": "dev-workflow",
   "description": "Start a PRD from source documents without inventing decisions, record decisions into it with an independent review, plan tasks from it, and map what a codebase really does",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "author": {
     "name": "suatkvam"
   },
